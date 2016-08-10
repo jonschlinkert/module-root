@@ -9,10 +9,13 @@ var callsite = require('callsite');
 var findup = require('findup-sync');
 
 module.exports = function(name) {
-  if (!name) {
-    name = callsite()[1].getFileName();
+  var fullpath;
+  if (name) {
+    fullpath = require.resolve(name);
+  } else {
+    fullpath = callsite()[1].getFileName();
   }
-  var fullpath = path.dirname(require.resolve(name));
-  var dir = findup('package.json', {cwd: fullpath})
-  return path.resolve(path.dirname(dir));
+  var cwd = path.dirname(fullpath);
+  var pkg = findup('package.json', { cwd: cwd });
+  return path.resolve(path.dirname(pkg));
 };
