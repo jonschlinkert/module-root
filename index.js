@@ -10,7 +10,7 @@ var findup = require('findup-sync');
 
 module.exports = function(name) {
   var fullpath;
-  if (name) {
+  if (arguments.length > 0) {
     fullpath = require.resolve(name);
   } else {
     fullpath = callsite()[1].getFileName();
