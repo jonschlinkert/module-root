@@ -22,7 +22,8 @@
     }
   ],
   "dependencies": {
-    "findup-sync": "~0.1.2"
+    "callsite": "^1.0.0",
+    "findup-sync": "^0.4.2"
   },
   "keywords": [
     "cwd",
