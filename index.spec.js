@@ -37,4 +37,9 @@ describe('index', () => {
         await fs.outputFile('package.json', JSON.stringify({}));
         expect(self()).toEqual(process.cwd());
     });
+
+    it('cwd', async () => {
+        await fs.outputFile(path.join('sub', 'node_modules', 'foo', 'package.json'), JSON.stringify({}));
+        expect(self('foo', { cwd: 'sub' })).toEqual(path.join(process.cwd(), 'sub', 'node_modules', 'foo'));
+    });
 });
