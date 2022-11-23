@@ -4,18 +4,19 @@
  * Licensed under the MIT license.
  */
 
-var path = require('path');
-var callsite = require('callsite');
-var findup = require('findup-sync');
+import path from 'path';
+import callsite from 'callsite';
+import findup from 'findup-sync';
+import resolveFrom from 'resolve-from';
 
-module.exports = function(name) {
-  var fullpath;
-  if (arguments.length > 0) {
-    fullpath = require.resolve(name);
-  } else {
-    fullpath = callsite()[1].getFileName();
+export default (...args) => {
+  let pkg;
+  try {
+    const fullpath = args.length > 0 ? resolveFrom(process.cwd(), args[0]) : callsite()[1].getFileName();
+    const cwd = path.dirname(fullpath);
+    pkg = findup('package.json', { cwd });
+  } catch {
+    pkg = resolveFrom(process.cwd(), `${args[0]}/package.json`);
   }
-  var cwd = path.dirname(fullpath);
-  var pkg = findup('package.json', { cwd: cwd });
   return path.resolve(path.dirname(pkg));
 };
