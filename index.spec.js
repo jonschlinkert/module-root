@@ -3,6 +3,7 @@ import fs from 'fs-extra';
 import path from 'path';
 import { expect } from 'expect';
 import outputFiles from 'output-files';
+import chdir from 'chdir';
 
 import self from './index.js';
 
@@ -62,6 +63,21 @@ describe('index', () => {
             },
         });
         expect(self('foo')).toEqual(path.join(process.cwd(), 'node_modules', 'foo'));
+    });
+
+    it("package name in path multiple times", async () => {
+        await outputFiles({
+            'foo/node_modules/foo': {
+                'package.json': JSON.stringify({
+                    main: './dist/index.js',
+                }),
+                dist: {
+                    'index.js': '',
+                    'package.json': '{}',
+                },
+            },
+        });
+        await chdir('foo', () => expect(self('foo')).toEqual(path.join(process.cwd(), 'node_modules', 'foo')));
     });
 
     it('no arguments', async () => {

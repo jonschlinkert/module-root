@@ -33,6 +33,7 @@
     "root"
   ],
   "devDependencies": {
+    "chdir": "npm:@dword-design/chdir@^3.0.2",
     "expect": "^29.3.1",
     "fs-extra": "^10.1.0",
     "mocha": "^10.1.0",
