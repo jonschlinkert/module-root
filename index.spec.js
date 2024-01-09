@@ -33,6 +33,37 @@ describe('index', () => {
         expect(self('foo')).toEqual(path.join(process.cwd(), 'node_modules', 'foo'));
     });
 
+    it("sub package.json esm", async () => {
+        await outputFiles({
+            'node_modules/foo': {
+                'package.json': JSON.stringify({
+                    type: 'module',
+                    exports: './dist/index.js',
+                }),
+                dist: {
+                    'index.js': '',
+                    'package.json': '{}',
+                },
+            },
+        });
+        expect(self('foo')).toEqual(path.join(process.cwd(), 'node_modules', 'foo'));
+    });
+
+    it("sub package.json cjs", async () => {
+        await outputFiles({
+            'node_modules/foo': {
+                'package.json': JSON.stringify({
+                    main: './dist/index.js',
+                }),
+                dist: {
+                    'index.js': '',
+                    'package.json': '{}',
+                },
+            },
+        });
+        expect(self('foo')).toEqual(path.join(process.cwd(), 'node_modules', 'foo'));
+    });
+
     it('no arguments', async () => {
         await fs.outputFile('package.json', JSON.stringify({}));
         expect(self()).toEqual(process.cwd());
