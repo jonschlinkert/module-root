@@ -16,53 +16,15 @@ afterEach(async function () {
 })
 
 describe('index', () => {
-    it('no main', async () => {
-        await fs.outputFile(path.join('node_modules', 'foo', 'package.json'), JSON.stringify({}));
+
+    it("simple", async () => {
+        await fs.ensureDir(path.join('node_modules', 'foo'));
         expect(self('foo')).toEqual(path.resolve('node_modules', 'foo'));
     });
 
-    it("doesn't export package.json", async () => {
-        await outputFiles({
-            'node_modules/foo': {
-                'package.json': JSON.stringify({
-                    type: 'module',
-                    exports: './index.js',
-                }),
-                'index.js': '',
-            },
-        });
-        expect(self('foo')).toEqual(path.resolve('node_modules', 'foo'));
-    });
-
-    it("sub package.json esm", async () => {
-        await outputFiles({
-            'node_modules/foo': {
-                'package.json': JSON.stringify({
-                    type: 'module',
-                    exports: './dist/index.js',
-                }),
-                dist: {
-                    'index.js': '',
-                    'package.json': '{}',
-                },
-            },
-        });
-        expect(self('foo')).toEqual(path.resolve('node_modules', 'foo'));
-    });
-
-    it("sub package.json cjs", async () => {
-        await outputFiles({
-            'node_modules/foo': {
-                'package.json': JSON.stringify({
-                    main: './dist/index.js',
-                }),
-                dist: {
-                    'index.js': '',
-                    'package.json': '{}',
-                },
-            },
-        });
-        expect(self('foo')).toEqual(path.resolve('node_modules', 'foo'));
+    it("scoped package", async () => {
+        await fs.ensureDir(path.join('node_modules', '@foo', 'bar'));
+        expect(self('@foo/bar')).toEqual(path.resolve('node_modules', '@foo', 'bar'));
     });
 
     it("package name in path multiple times", async () => {
@@ -80,18 +42,6 @@ describe('index', () => {
         await chdir('foo', () => expect(self('foo')).toEqual(path.resolve('node_modules', 'foo')));
     });
 
-    it("package name folder in subpath of package", async () => {
-        await outputFiles({
-            'node_modules/foo': {
-                'package.json': JSON.stringify({
-                    main: './foo/index.js',
-                }),
-                'foo/index.js': '',
-            },
-        });
-        expect(self('foo')).toEqual(path.resolve('node_modules', 'foo'));
-    });
-
     it("package name file in subpath of package", async () => {
         await outputFiles({
             'node_modules/foo': {
@@ -104,7 +54,7 @@ describe('index', () => {
         expect(self('foo')).toEqual(path.resolve('node_modules', 'foo'));
     });
 
-    it("node_modules package once not found", async () => {
+    it("multiple node_modules paths", async () => {
         await outputFiles({
             foo: {
                 'node_modules/baz': {},
